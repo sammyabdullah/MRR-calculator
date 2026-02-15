@@ -73,9 +73,9 @@
     function parseFileData(data, ext) {
         let workbook;
         if (ext === 'csv') {
-            workbook = XLSX.read(data, { type: 'string' });
+            workbook = XLSX.read(data, { type: 'string', cellDates: true });
         } else {
-            workbook = XLSX.read(data, { type: 'array' });
+            workbook = XLSX.read(data, { type: 'array', cellDates: true });
         }
 
         const sheetName = workbook.SheetNames[0];
@@ -87,37 +87,50 @@
             return;
         }
 
-        // Parse header row for dates
-        const headerRow = json[0];
+        // Find the header row containing dates (may not be row 0 if sheet has leading empty rows)
+        let headerRowIdx = -1;
         const dates = [];
         let dataStartCol = -1;
 
-        // Find where date columns begin (skip customer name column(s))
-        for (let i = 0; i < headerRow.length; i++) {
-            const parsed = parseDate(headerRow[i]);
-            if (parsed) {
-                if (dataStartCol === -1) dataStartCol = i;
-                dates.push(parsed);
+        for (let r = 0; r < json.length; r++) {
+            const row = json[r];
+            const rowDates = [];
+            let rowStartCol = -1;
+
+            for (let i = 0; i < row.length; i++) {
+                const parsed = parseDate(row[i]);
+                if (parsed) {
+                    if (rowStartCol === -1) rowStartCol = i;
+                    rowDates.push(parsed);
+                }
+            }
+
+            // A valid header row should have at least 2 dates
+            if (rowDates.length >= 2) {
+                headerRowIdx = r;
+                dates.push(...rowDates);
+                dataStartCol = rowStartCol;
+                break;
             }
         }
 
-        if (dates.length === 0) {
-            showError('Could not find date headers. Ensure the first row contains dates (e.g., 1/31/2024).');
+        if (headerRowIdx === -1 || dates.length === 0) {
+            showError('Could not find date headers. Ensure the spreadsheet has a row with dates (e.g., 1/31/2024).');
             return;
         }
 
-        // Parse customer data
+        // Parse customer data (rows after the header row)
         const customers = [];
-        for (let r = 1; r < json.length; r++) {
+        for (let r = headerRowIdx + 1; r < json.length; r++) {
             const row = json[r];
             // Get customer name (columns before the date columns)
             let name = '';
             for (let c = 0; c < dataStartCol; c++) {
-                if (row[c] && String(row[c]).trim()) {
-                    name = String(row[c]).trim();
+                if (row[c] && typeof row[c] === 'string' && row[c].trim()) {
+                    name = row[c].trim();
                 }
             }
-            if (!name) name = `Customer ${r}`;
+            if (!name) continue; // Skip rows without a customer name (empty rows or summary rows)
 
             const revenue = [];
             for (let c = dataStartCol; c < dataStartCol + dates.length; c++) {
@@ -151,15 +164,15 @@
     }
 
     function parseDate(val) {
-        if (val instanceof Date) return val;
-        if (typeof val === 'number') {
-            // Excel serial date number
+        if (val instanceof Date && !isNaN(val.getTime()) && val.getFullYear() > 1900) return val;
+        if (typeof val === 'number' && val > 365) {
+            // Excel serial date number (365 = ~Jan 1901, reject small values like 0)
             const d = XLSX.SSF.parse_date_code(val);
-            if (d) return new Date(d.y, d.m - 1, d.d);
+            if (d && d.y > 1900) return new Date(d.y, d.m - 1, d.d);
         }
         if (typeof val === 'string') {
             const d = new Date(val);
-            if (!isNaN(d.getTime())) return d;
+            if (!isNaN(d.getTime()) && d.getFullYear() > 1900) return d;
         }
         return null;
     }
