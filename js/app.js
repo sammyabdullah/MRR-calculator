@@ -164,15 +164,23 @@
     }
 
     function parseDate(val) {
-        if (val instanceof Date && !isNaN(val.getTime()) && val.getFullYear() > 1900) return val;
+        // Return plain {year, month} objects to avoid timezone issues.
+        // SheetJS cellDates creates UTC dates; using getMonth() in a non-UTC
+        // timezone could shift the date to the wrong day/month.
+        if (val instanceof Date && !isNaN(val.getTime())) {
+            const y = val.getUTCFullYear();
+            if (y > 1900) return { year: y, month: val.getUTCMonth() + 1 };
+        }
         if (typeof val === 'number' && val > 365) {
             // Excel serial date number (365 = ~Jan 1901, reject small values like 0)
             const d = XLSX.SSF.parse_date_code(val);
-            if (d && d.y > 1900) return new Date(d.y, d.m - 1, d.d);
+            if (d && d.y > 1900) return { year: d.y, month: d.m };
         }
         if (typeof val === 'string') {
             const d = new Date(val);
-            if (!isNaN(d.getTime()) && d.getFullYear() > 1900) return d;
+            if (!isNaN(d.getTime()) && d.getUTCFullYear() > 1900) {
+                return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1 };
+            }
         }
         return null;
     }
@@ -652,9 +660,8 @@
 
     function formatDate(d) {
         if (!d) return '';
-        const month = d.getMonth() + 1;
-        const year = d.getFullYear();
-        return `${month}/${year}`;
+        const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return `${monthNames[d.month - 1]}-${String(d.year).slice(-2)}`;
     }
 
     function formatCurrency(val) {
