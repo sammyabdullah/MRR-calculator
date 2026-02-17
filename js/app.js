@@ -164,15 +164,23 @@
     }
 
     function parseDate(val) {
-        if (val instanceof Date && !isNaN(val.getTime()) && val.getFullYear() > 1900) return val;
+        // Return plain {year, month} objects to avoid timezone issues.
+        // SheetJS cellDates creates UTC dates; using getMonth() in a non-UTC
+        // timezone could shift the date to the wrong day/month.
+        if (val instanceof Date && !isNaN(val.getTime())) {
+            const y = val.getUTCFullYear();
+            if (y > 1900) return { year: y, month: val.getUTCMonth() + 1 };
+        }
         if (typeof val === 'number' && val > 365) {
             // Excel serial date number (365 = ~Jan 1901, reject small values like 0)
             const d = XLSX.SSF.parse_date_code(val);
-            if (d && d.y > 1900) return new Date(d.y, d.m - 1, d.d);
+            if (d && d.y > 1900) return { year: d.y, month: d.m };
         }
         if (typeof val === 'string') {
             const d = new Date(val);
-            if (!isNaN(d.getTime()) && d.getFullYear() > 1900) return d;
+            if (!isNaN(d.getTime()) && d.getUTCFullYear() > 1900) {
+                return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1 };
+            }
         }
         return null;
     }
@@ -380,15 +388,15 @@
             data: {
                 labels: slicedLabels,
                 datasets: [
-                    { label: 'New', data: m.newMRR.slice(start), backgroundColor: '#22c55e', stack: 'gains' },
-                    { label: 'Upgrade', data: m.upgradeMRR.slice(start), backgroundColor: '#86efac', stack: 'gains' },
-                    { label: 'Downgrade', data: m.downgradeMRR.slice(start), backgroundColor: '#fbbf24', stack: 'losses' },
-                    { label: 'Churn', data: m.churnMRR.slice(start), backgroundColor: '#ef4444', stack: 'losses' },
+                    { label: 'New', data: m.newMRR.slice(start), backgroundColor: '#40916c', stack: 'gains' },
+                    { label: 'Upgrade', data: m.upgradeMRR.slice(start), backgroundColor: '#95d5b2', stack: 'gains' },
+                    { label: 'Downgrade', data: m.downgradeMRR.slice(start), backgroundColor: '#e09f3e', stack: 'losses' },
+                    { label: 'Churn', data: m.churnMRR.slice(start), backgroundColor: '#c1121f', stack: 'losses' },
                     {
                         label: 'End MRR',
                         data: m.endMRR.slice(start),
                         type: 'line',
-                        borderColor: '#2563eb',
+                        borderColor: '#1b4332',
                         backgroundColor: 'transparent',
                         borderWidth: 2,
                         pointRadius: 1,
@@ -434,8 +442,8 @@
                     {
                         label: 'ARR',
                         data: m.arr.slice(start),
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        borderColor: '#2d6a4f',
+                        backgroundColor: 'rgba(45, 106, 79, 0.08)',
                         fill: true,
                         borderWidth: 2,
                         pointRadius: 1,
@@ -480,21 +488,21 @@
                     {
                         label: 'TTM NDR',
                         data: m.ttmNDR.slice(retStart),
-                        borderColor: '#2563eb',
+                        borderColor: '#1b4332',
                         borderWidth: 2,
                         pointRadius: 1,
                     },
                     {
                         label: 'TTM GDR',
                         data: m.ttmGDR.slice(retStart),
-                        borderColor: '#f59e0b',
+                        borderColor: '#e09f3e',
                         borderWidth: 2,
                         pointRadius: 1,
                     },
                     {
                         label: 'Cohort NDR',
                         data: m.cohortNDR.slice(retStart),
-                        borderColor: '#22c55e',
+                        borderColor: '#52b788',
                         borderWidth: 2,
                         pointRadius: 1,
                         borderDash: [5, 5],
@@ -502,7 +510,7 @@
                     {
                         label: 'Cohort GDR',
                         data: m.cohortGDR.slice(retStart),
-                        borderColor: '#ef4444',
+                        borderColor: '#c1121f',
                         borderWidth: 2,
                         pointRadius: 1,
                         borderDash: [5, 5],
@@ -542,13 +550,13 @@
             data: {
                 labels: slicedLabels,
                 datasets: [
-                    { label: 'New', data: m.newCustomers.slice(start), backgroundColor: '#22c55e' },
-                    { label: 'Churn', data: m.churnedCustomers.slice(start), backgroundColor: '#ef4444' },
+                    { label: 'New', data: m.newCustomers.slice(start), backgroundColor: '#40916c' },
+                    { label: 'Churn', data: m.churnedCustomers.slice(start), backgroundColor: '#c1121f' },
                     {
                         label: 'End Customers',
                         data: m.endCustomers.slice(start),
                         type: 'line',
-                        borderColor: '#2563eb',
+                        borderColor: '#1b4332',
                         backgroundColor: 'transparent',
                         borderWidth: 2,
                         pointRadius: 1,
@@ -652,9 +660,8 @@
 
     function formatDate(d) {
         if (!d) return '';
-        const month = d.getMonth() + 1;
-        const year = d.getFullYear();
-        return `${month}/${year}`;
+        const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return `${monthNames[d.month - 1]}-${String(d.year).slice(-2)}`;
     }
 
     function formatCurrency(val) {
