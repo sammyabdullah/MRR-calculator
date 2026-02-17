@@ -3,16 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MRR Calculator - Customer Revenue Metrics</title>
+    <title>MRR Calculator | SaaS Revenue Metrics</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <header>
-        <h1>MRR Calculator</h1>
-        <p class="subtitle">Upload your customer revenue data to calculate SaaS metrics</p>
+        <div class="header-inner">
+            <h1>MRR <span>Calculator</span></h1>
+            <p class="subtitle">SaaS Revenue Metrics</p>
+        </div>
     </header>
+
+    <section class="hero">
+        <div class="hero-inner">
+            <h2>Understand Your SaaS Revenue</h2>
+            <p>Upload your customer revenue data to instantly calculate MRR, ARR, retention, churn, and growth metrics across your entire customer base.</p>
+        </div>
+    </section>
 
     <main>
         <!-- Upload Section -->
@@ -31,7 +40,7 @@
             </div>
             <div id="drop-zone" class="drop-zone">
                 <div class="drop-zone-content">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="17 8 12 3 7 8"/>
                         <line x1="12" y1="3" x2="12" y2="15"/>

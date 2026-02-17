@@ -388,15 +388,15 @@
             data: {
                 labels: slicedLabels,
                 datasets: [
-                    { label: 'New', data: m.newMRR.slice(start), backgroundColor: '#22c55e', stack: 'gains' },
-                    { label: 'Upgrade', data: m.upgradeMRR.slice(start), backgroundColor: '#86efac', stack: 'gains' },
-                    { label: 'Downgrade', data: m.downgradeMRR.slice(start), backgroundColor: '#fbbf24', stack: 'losses' },
-                    { label: 'Churn', data: m.churnMRR.slice(start), backgroundColor: '#ef4444', stack: 'losses' },
+                    { label: 'New', data: m.newMRR.slice(start), backgroundColor: '#40916c', stack: 'gains' },
+                    { label: 'Upgrade', data: m.upgradeMRR.slice(start), backgroundColor: '#95d5b2', stack: 'gains' },
+                    { label: 'Downgrade', data: m.downgradeMRR.slice(start), backgroundColor: '#e09f3e', stack: 'losses' },
+                    { label: 'Churn', data: m.churnMRR.slice(start), backgroundColor: '#c1121f', stack: 'losses' },
                     {
                         label: 'End MRR',
                         data: m.endMRR.slice(start),
                         type: 'line',
-                        borderColor: '#2563eb',
+                        borderColor: '#1b4332',
                         backgroundColor: 'transparent',
                         borderWidth: 2,
                         pointRadius: 1,
@@ -442,8 +442,8 @@
                     {
                         label: 'ARR',
                         data: m.arr.slice(start),
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        borderColor: '#2d6a4f',
+                        backgroundColor: 'rgba(45, 106, 79, 0.08)',
                         fill: true,
                         borderWidth: 2,
                         pointRadius: 1,
@@ -488,21 +488,21 @@
                     {
                         label: 'TTM NDR',
                         data: m.ttmNDR.slice(retStart),
-                        borderColor: '#2563eb',
+                        borderColor: '#1b4332',
                         borderWidth: 2,
                         pointRadius: 1,
                     },
                     {
                         label: 'TTM GDR',
                         data: m.ttmGDR.slice(retStart),
-                        borderColor: '#f59e0b',
+                        borderColor: '#e09f3e',
                         borderWidth: 2,
                         pointRadius: 1,
                     },
                     {
                         label: 'Cohort NDR',
                         data: m.cohortNDR.slice(retStart),
-                        borderColor: '#22c55e',
+                        borderColor: '#52b788',
                         borderWidth: 2,
                         pointRadius: 1,
                         borderDash: [5, 5],
@@ -510,7 +510,7 @@
                     {
                         label: 'Cohort GDR',
                         data: m.cohortGDR.slice(retStart),
-                        borderColor: '#ef4444',
+                        borderColor: '#c1121f',
                         borderWidth: 2,
                         pointRadius: 1,
                         borderDash: [5, 5],
@@ -550,13 +550,13 @@
             data: {
                 labels: slicedLabels,
                 datasets: [
-                    { label: 'New', data: m.newCustomers.slice(start), backgroundColor: '#22c55e' },
-                    { label: 'Churn', data: m.churnedCustomers.slice(start), backgroundColor: '#ef4444' },
+                    { label: 'New', data: m.newCustomers.slice(start), backgroundColor: '#40916c' },
+                    { label: 'Churn', data: m.churnedCustomers.slice(start), backgroundColor: '#c1121f' },
                     {
                         label: 'End Customers',
                         data: m.endCustomers.slice(start),
                         type: 'line',
-                        borderColor: '#2563eb',
+                        borderColor: '#1b4332',
                         backgroundColor: 'transparent',
                         borderWidth: 2,
                         pointRadius: 1,
