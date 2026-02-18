@@ -65,6 +65,18 @@ header {
     justify-content: space-between;
 }
 
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.header-logo {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
 header h1 {
     font-size: 1.15rem;
     font-weight: 700;
@@ -85,7 +97,7 @@ header .subtitle {
 /* ===== HERO ===== */
 
 .hero {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #2a3f6a 100%);
     color: var(--white);
     padding: 4rem 2rem;
     text-align: center;
