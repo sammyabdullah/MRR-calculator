@@ -71,6 +71,12 @@ header {
     gap: 0.75rem;
 }
 
+.header-logo {
+    height: 60px;
+    width: auto;
+    flex-shrink: 0;
+}
+
 header h1 {
     font-size: 1.15rem;
     font-weight: 700;
