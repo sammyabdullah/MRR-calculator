@@ -201,6 +201,24 @@ main {
     font-size: 0.825rem;
 }
 
+.instructions-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.instructions-text {
+    flex: 1;
+}
+
+.instructions-example {
+    max-width: 180px;
+    height: auto;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    flex-shrink: 0;
+}
+
 /* ===== DROP ZONE ===== */
 
 .drop-zone {
