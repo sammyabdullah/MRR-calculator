@@ -121,6 +121,7 @@
 
         // Parse customer data (rows after the header row)
         const customers = [];
+        let autoIndex = 0;
         for (let r = headerRowIdx + 1; r < json.length; r++) {
             const row = json[r];
             // Get customer name (columns before the date columns)
@@ -130,7 +131,6 @@
                     name = row[c].trim();
                 }
             }
-            if (!name) continue; // Skip rows without a customer name (empty rows or summary rows)
 
             const revenue = [];
             for (let c = dataStartCol; c < dataStartCol + dates.length; c++) {
@@ -138,8 +138,13 @@
                 revenue.push(Math.max(0, val)); // Ensure non-negative
             }
 
-            // Only include customers that have at least some revenue
+            // Only include rows that have at least some revenue
             if (revenue.some(v => v > 0)) {
+                // Auto-generate name if no name column or name is empty
+                if (!name) {
+                    autoIndex++;
+                    name = 'Customer ' + autoIndex;
+                }
                 customers.push({ name, revenue });
             }
         }
