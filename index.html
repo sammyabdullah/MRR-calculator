@@ -43,14 +43,7 @@
             </div>
             <div id="file-info" class="file-info hidden"></div>
             <div id="upload-error" class="error hidden"></div>
-
-            <div id="net-loss-section" class="net-loss-section hidden">
-                <h3>Optional: Net Loss Data (for Efficiency Metrics)</h3>
-                <p>Enter monthly net loss values to calculate payback period and efficiency ratios. Leave blank to skip these metrics.</p>
-                <div id="net-loss-inputs"></div>
-            </div>
-
-            <button id="calculate-btn" class="btn-primary hidden" disabled>Calculate Metrics</button>
+            <div id="loading-indicator" class="hidden">Calculating metrics...</div>
         </section>
 
         <!-- Results Section -->
@@ -105,14 +98,6 @@
                 </div>
                 <div class="table-wrapper">
                     <table id="customer-table" class="metrics-table"></table>
-                </div>
-            </section>
-
-            <!-- TTM Efficiency -->
-            <section id="efficiency-section" class="card results-card hidden">
-                <h2>TTM Efficiency</h2>
-                <div class="table-wrapper">
-                    <table id="efficiency-table" class="metrics-table"></table>
                 </div>
             </section>
 

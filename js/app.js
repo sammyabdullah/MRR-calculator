@@ -17,12 +17,9 @@
     const fileInput = document.getElementById('file-input');
     const fileInfo = document.getElementById('file-info');
     const uploadError = document.getElementById('upload-error');
-    const calculateBtn = document.getElementById('calculate-btn');
     const resultsSection = document.getElementById('results-section');
-    const netLossSection = document.getElementById('net-loss-section');
-    const netLossInputs = document.getElementById('net-loss-inputs');
+    const loadingIndicator = document.getElementById('loading-indicator');
     const exportBtn = document.getElementById('export-btn');
-    const efficiencySection = document.getElementById('efficiency-section');
 
     // ===== FILE UPLOAD =====
 
@@ -41,7 +38,6 @@
         if (fileInput.files.length) handleFile(fileInput.files[0]);
     });
 
-    calculateBtn.addEventListener('click', runCalculations);
     exportBtn.addEventListener('click', exportResults);
 
     function handleFile(file) {
@@ -159,13 +155,8 @@
 
         fileInfo.textContent = `Loaded: ${customers.length} customers across ${dates.length} months (${formatDate(dates[0])} to ${formatDate(dates[dates.length - 1])})`;
 
-        // Show net loss inputs
-        buildNetLossInputs(dates);
-        netLossSection.classList.remove('hidden');
-
-        // Show calculate button
-        calculateBtn.classList.remove('hidden');
-        calculateBtn.disabled = false;
+        // Auto-calculate metrics
+        runCalculations();
     }
 
     function parseDate(val) {
@@ -190,45 +181,20 @@
         return null;
     }
 
-    function buildNetLossInputs(dates) {
-        netLossInputs.innerHTML = '';
-        dates.forEach((d, i) => {
-            const group = document.createElement('div');
-            group.className = 'net-loss-input-group';
-            const label = document.createElement('label');
-            label.textContent = formatDate(d);
-            label.setAttribute('for', `net-loss-${i}`);
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.id = `net-loss-${i}`;
-            input.placeholder = '0';
-            input.step = 'any';
-            group.appendChild(label);
-            group.appendChild(input);
-            netLossInputs.appendChild(group);
-        });
-    }
-
     // ===== CALCULATIONS =====
 
     function runCalculations() {
         if (!parsedCustomerData || !parsedDates) return;
 
-        // Gather net loss data
-        const netLossData = [];
-        let hasAnyNetLoss = false;
-        for (let i = 0; i < parsedDates.length; i++) {
-            const input = document.getElementById(`net-loss-${i}`);
-            const val = input && input.value !== '' ? parseFloat(input.value) : null;
-            netLossData.push(val);
-            if (val !== null) hasAnyNetLoss = true;
-        }
+        loadingIndicator.classList.remove('hidden');
 
         computedMetrics = calculateMetrics(
             parsedCustomerData,
             parsedDates,
-            hasAnyNetLoss ? netLossData : null
+            null
         );
+
+        loadingIndicator.classList.add('hidden');
 
         renderResults(computedMetrics);
         resultsSection.classList.remove('hidden');
@@ -254,13 +220,6 @@
         renderRetentionTable(m, labels, start);
         renderUDCTable(m, labels, start);
         renderCustomerTable(m, labels, start);
-
-        if (m.netLoss) {
-            efficiencySection.classList.remove('hidden');
-            renderEfficiencyTable(m, labels, start);
-        } else {
-            efficiencySection.classList.add('hidden');
-        }
 
         // Charts
         renderMRRBridgeChart(m, labels, start);
@@ -333,17 +292,6 @@
             { label: 'Customer Growth (YOY)', data: m.customerGrowth, fmt: 'percent' },
         ];
         buildTable('customer-table', rows, labels, start);
-    }
-
-    function renderEfficiencyTable(m, labels, start) {
-        const rows = [
-            { label: 'Net Loss', data: m.netLoss, fmt: 'currency' },
-            { label: 'TTM New ARR / TTM Net Loss', data: m.ttmNewARRoverLoss, fmt: 'ratio' },
-            { label: 'Payback Period (TTM)', data: m.ttmPayback, fmt: 'ratio' },
-            { label: '6mo New ARR / 6mo Net Loss', data: m.sixMoNewARRoverLoss, fmt: 'ratio' },
-            { label: 'Payback Period (6mo)', data: m.sixMoPayback, fmt: 'ratio' },
-        ];
-        buildTable('efficiency-table', rows, labels, start);
     }
 
     function buildTable(tableId, rows, labels, start) {
