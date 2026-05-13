@@ -378,11 +378,12 @@ footer {
 .footer-resources {
     margin-top: 0.75rem;
     font-weight: 700;
-    color: var(--gray-700);
+    font-size: 0.9rem;
+    color: #0099DB;
 }
 
 .footer-resources a {
-    color: var(--primary);
+    color: #0099DB;
     text-decoration: none;
     margin: 0 0.5rem;
     font-weight: 700;
