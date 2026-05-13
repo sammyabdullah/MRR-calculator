@@ -375,6 +375,20 @@ footer {
     letter-spacing: 0.01em;
 }
 
+.footer-resources {
+    margin-top: 0.75rem;
+}
+
+.footer-resources a {
+    color: var(--primary);
+    text-decoration: none;
+    margin: 0 0.5rem;
+}
+
+.footer-resources a:hover {
+    text-decoration: underline;
+}
+
 /* ===== RESPONSIVE ===== */
 
 @media (max-width: 768px) {
