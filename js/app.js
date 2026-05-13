@@ -199,6 +199,14 @@
         renderResults(computedMetrics);
         resultsSection.classList.remove('hidden');
 
+        // Auto-scroll all tables to show the most recent date (rightmost)
+        // Must happen after resultsSection is visible so scrollWidth is computed
+        requestAnimationFrame(() => {
+            document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+                wrapper.scrollLeft = wrapper.scrollWidth;
+            });
+        });
+
         // Scroll to results
         resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
@@ -228,10 +236,6 @@
         renderRetentionChart(m, labels, start);
         renderCustomerChart(m, labels, start);
 
-        // Auto-scroll all tables to show the most recent date (rightmost)
-        document.querySelectorAll('.table-wrapper').forEach(wrapper => {
-            wrapper.scrollLeft = wrapper.scrollWidth;
-        });
     }
 
     // ===== TABLE RENDERERS =====
