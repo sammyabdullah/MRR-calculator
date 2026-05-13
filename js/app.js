@@ -215,6 +215,7 @@
         const firstActive = m.endMRR.findIndex(v => v > 0);
         const start = Math.max(0, firstActive);
 
+        renderSummaryTable(m, labels, start);
         renderMRRBridgeTable(m, labels, start);
         renderGrowthTable(m, labels, start);
         renderRetentionTable(m, labels, start);
@@ -226,9 +227,118 @@
         renderARRChart(m, labels, start);
         renderRetentionChart(m, labels, start);
         renderCustomerChart(m, labels, start);
+
+        // Auto-scroll all tables to show the most recent date (rightmost)
+        document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+            wrapper.scrollLeft = wrapper.scrollWidth;
+        });
     }
 
     // ===== TABLE RENDERERS =====
+
+    function renderSummaryTable(m, labels, start) {
+        const sections = [
+            {
+                header: 'MRR',
+                rows: [
+                    { label: 'Begin', data: m.beginMRR, fmt: 'currency' },
+                    { label: 'New', data: m.newMRR, fmt: 'currency', cls: 'positive' },
+                    { label: 'Upgrade', data: m.upgradeMRR, fmt: 'currency', cls: 'positive' },
+                    { label: 'Downgrade', data: m.downgradeMRR, fmt: 'currency', cls: 'negative' },
+                    { label: 'Churn', data: m.churnMRR, fmt: 'currency', cls: 'negative' },
+                    { label: 'End', data: m.endMRR, fmt: 'currency', total: true },
+                ],
+            },
+            {
+                header: 'Growth Data',
+                rows: [
+                    { label: 'ARR', data: m.arr, fmt: 'currency' },
+                    { label: 'MRR', data: m.mrr, fmt: 'currency' },
+                    { label: 'New ARR (TTM)', data: m.newARR, fmt: 'currency' },
+                    { label: 'YOY Growth', data: m.yoyGrowth, fmt: 'percent' },
+                    { label: 'Max Customer Win', data: m.maxCustomerWin, fmt: 'currency' },
+                    { label: 'Avg Customer Win', data: m.avgCustomerWin, fmt: 'currency' },
+                ],
+            },
+            {
+                header: 'Retention Data',
+                rows: [
+                    { label: 'Net New MRR', data: m.netNewMRR, fmt: 'currency' },
+                    { label: 'TTM NDR', data: m.ttmNDR, fmt: 'percent' },
+                    { label: 'TTM GDR', data: m.ttmGDR, fmt: 'percent' },
+                    { label: 'Cohort NDR', data: m.cohortNDR, fmt: 'percent' },
+                    { label: 'Cohort GDR', data: m.cohortGDR, fmt: 'percent' },
+                ],
+            },
+            {
+                header: 'Upgrade / Downgrade / Churn Details',
+                rows: [
+                    { label: 'Upgrades (#)', data: m.upgradeCount, fmt: 'number' },
+                    { label: 'Downgrades (#)', data: m.downgradeCount, fmt: 'number' },
+                    { label: 'Max Upgrade', data: m.maxUpgrade, fmt: 'currency' },
+                    { label: 'Avg Upgrade', data: m.avgUpgrade, fmt: 'currency' },
+                    { label: 'Max Downgrade', data: m.maxDowngrade, fmt: 'currency' },
+                    { label: 'Avg Downgrade', data: m.avgDowngrade, fmt: 'currency' },
+                    { label: 'Max Churn', data: m.maxChurn, fmt: 'currency' },
+                    { label: 'Avg Churn', data: m.avgChurn, fmt: 'currency' },
+                ],
+            },
+            {
+                header: 'Customer Counts',
+                rows: [
+                    { label: 'Begin', data: m.beginCustomers, fmt: 'number' },
+                    { label: 'New', data: m.newCustomers, fmt: 'number' },
+                    { label: 'Churn', data: m.churnedCustomers, fmt: 'number' },
+                    { label: 'End', data: m.endCustomers, fmt: 'number', total: true },
+                    { label: 'ACV', data: m.acv, fmt: 'currency' },
+                    { label: 'Largest Customer', data: m.largestCustomer, fmt: 'currency' },
+                    { label: 'Max Concentration', data: m.maxConcentration, fmt: 'percent' },
+                    { label: 'Gross Cust. Retention (TTM)', data: m.grossCustomerRetention, fmt: 'percent' },
+                    { label: 'Customer Growth (YOY)', data: m.customerGrowth, fmt: 'percent' },
+                ],
+            },
+        ];
+
+        const table = document.getElementById('summary-table');
+        table.innerHTML = '';
+
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        headerRow.innerHTML = '<th>Metric</th>';
+        for (let i = start; i < labels.length; i++) {
+            headerRow.innerHTML += `<th>${labels[i]}</th>`;
+        }
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        sections.forEach(section => {
+            const sectionRow = document.createElement('tr');
+            sectionRow.classList.add('section-header-row');
+            sectionRow.innerHTML = `<td colspan="${labels.length - start + 1}">${section.header}</td>`;
+            tbody.appendChild(sectionRow);
+
+            section.rows.forEach(row => {
+                const tr = document.createElement('tr');
+                if (row.total) tr.classList.add('total-row');
+                let html = `<td>${row.label}</td>`;
+                for (let i = start; i < labels.length; i++) {
+                    const val = row.data[i];
+                    const formatted = formatValue(val, row.fmt);
+                    let cls = '';
+                    if (row.cls) {
+                        cls = row.cls;
+                    } else if (row.fmt === 'currency' && typeof val === 'number') {
+                        cls = val > 0 ? '' : val < 0 ? 'negative' : '';
+                    }
+                    html += `<td class="${cls}">${formatted}</td>`;
+                }
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+        });
+        table.appendChild(tbody);
+    }
 
     function renderMRRBridgeTable(m, labels, start) {
         const rows = [
