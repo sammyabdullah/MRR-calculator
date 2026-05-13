@@ -333,6 +333,17 @@ main {
     color: var(--gray-900);
 }
 
+.section-header-row td {
+    background: var(--gray-100) !important;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.6rem 0.75rem;
+    border-top: 2px solid var(--gray-300);
+}
+
 .positive {
     color: var(--success);
 }
