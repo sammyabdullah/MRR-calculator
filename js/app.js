@@ -308,7 +308,7 @@
 
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
-        headerRow.innerHTML = '<th>Metric</th>';
+        headerRow.innerHTML = '<th>MRR Build</th>';
         for (let i = start; i < labels.length; i++) {
             headerRow.innerHTML += `<th>${labels[i]}</th>`;
         }
